@@ -3,63 +3,55 @@ package neural;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Neuron {
+class Neuron {
 
-	public static final double SIGMA = 0.01;
+  private static final double LEARNING_RATE = 0.1;
 
-	protected List<Neuron> inputNodes = new ArrayList<Neuron>();
-	protected List<Neuron> outputNodes = new ArrayList<Neuron>();
-	protected List<Double> inputWeights = new ArrayList<Double>();
+  private List<Neuron> inputNeurons = new ArrayList<>();
+  private List<Neuron> outputNeurons = new ArrayList<>();
+  private List<Double> inputWeights = new ArrayList<>();
 
-	private double activation;
-	private double threshold = 0.5;
+  private double activation;
 
-	public void calcActivation() {
-		activation = 0.0;
-		for (int i = 0; i < inputNodes.size(); i++) {
-			Neuron inputNode = inputNodes.get(i);
-			if (inputNode.isActive()) {
-				activation += inputWeights.get(i);
-			}
-		}
-	}
+  void calcActivation() {
+    this.activation = inputNeurons.stream().map(Neuron::getActivation).mapToDouble(Double::doubleValue).sum();
+  }
 
-	public void learn(boolean correct) {
-		if (!correct) {
-			for (int i = 0; i < inputWeights.size(); i++) {
-				double weight = inputWeights.get(i);
-				weight += isActive() ? SIGMA : -1 * SIGMA;
-				inputWeights.set(i, weight);
-			}
-			
-			for (Neuron inputNode : inputNodes) {
-				inputNode.learn(correct);
-			}
-		}
-	}
+  void learn(boolean isCorrect) {
+    if (isCorrect) {
+      return;
+    }
 
-	public double getActivation() {
-		return activation;
-	}
+    for (int i = 0; i < inputWeights.size(); i++) {
+      double newWeight = inputWeights.get(i) + (isActive() ? LEARNING_RATE : -1 * LEARNING_RATE);
+      inputWeights.set(i, newWeight);
+    }
 
-	public void setActivation(int activation) {
-		this.activation = activation;
-	}
+    inputNeurons.forEach(input -> input.learn(false));
+  }
 
-	public double getThreshold() {
-		return threshold;
-	}
+  private double getActivation() {
+    return activation;
+  }
 
-	public void addInputNode(Neuron node) {
-		inputNodes.add(node);
-		inputWeights.add(Math.random());
-	}
+  void setActivation(int activation) {
+    this.activation = activation;
+  }
 
-	public void addOutputNode(Neuron node) {
-		outputNodes.add(node);
-	}
+  private double getThreshold() {
+    return 0.5;
+  }
 
-	public boolean isActive() {
-		return getActivation() >= getThreshold();
-	}
+  void addInputNode(Neuron node) {
+    inputNeurons.add(node);
+    inputWeights.add(Math.random());
+  }
+
+  void addOutputNode(Neuron node) {
+    outputNeurons.add(node);
+  }
+
+  boolean isActive() {
+    return getActivation() >= getThreshold();
+  }
 }
