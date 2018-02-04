@@ -5,13 +5,19 @@ public class Main {
   public static void main(String[] args) {
     Network network = new Network(4, 1, 100);
 
-    for (int i = 0; i < 10000; i++) {
+    System.out.println("Learning...");
+    int lessonsCount = 10000;
+    for (int i = 0; i < lessonsCount; i++) {
+      System.out.println(String.format("%d/%d: %.00f", i, lessonsCount, 1.0 * i / lessonsCount));
       network.learn(intToActivations(i), intToOutput(i), 100);
     }
 
     int hits = 0;
     int misses = 0;
-    for (int i = 0; i < 1000; i++) {
+    System.out.println("Stimulating...");
+    int stimulationCount = 1000;
+    for (int i = 0; i < stimulationCount; i++) {
+      System.out.println(String.format("%d/%d: %.00f", i, stimulationCount, 1.0 * i / 1000.0));
       boolean expected = intToOutput(i)[0];
       boolean actual = network.stimulate(intToActivations(i))[0];
       hits += (expected == actual ? 1 : 0);

@@ -8,13 +8,23 @@ class Neuron {
   private static final double LEARNING_RATE = 0.1;
 
   private List<Neuron> inputNeurons = new ArrayList<>();
-  private List<Neuron> outputNeurons = new ArrayList<>();
+  private List<Neuron> outputNeurons = new ArrayList<>(); // TODO: Resolve inaccessed variable
   private List<Double> inputWeights = new ArrayList<>();
 
   private double activation;
 
+  private static double sigmoid(double activation) {
+    return 1.0 / (1 + Math.pow(Math.E, (-1.0 *  activation)));
+  }
+
   void calcActivation() {
-    this.activation = inputNeurons.stream().map(Neuron::getActivation).mapToDouble(Double::doubleValue).sum();
+    double sum = 0.0;
+    for (int i = 0; i < inputNeurons.size(); i++) {
+      Neuron inputNeuron = inputNeurons.get(i);
+      Double neuronActivation = inputNeuron.getActivation();
+      sum += neuronActivation * inputWeights.get(i);
+    }
+    this.activation = sigmoid(sum);
   }
 
   void learn(boolean isCorrect) {
